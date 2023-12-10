@@ -1,7 +1,6 @@
 {
   "name": "advent-of-code-2023",
-  "module": "index.ts",
-  "type": "module",
+  "private": true,
   "devDependencies": {
     "bun-types": "latest"
   },
