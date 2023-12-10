@@ -11,9 +11,9 @@ type SeedMap = {
     location: number
 }
 
-const getValueFromMap = (input: string, map: string, sourceID) => {
+const getValueFromMap = (input: string[], map: string, sourceID) => {
     let mapStarted = false;
-    for (const line of input.split("\n")) {
+    for (const line of input) {
         if (line.includes(map)) {
             mapStarted = true;
             continue;
@@ -35,7 +35,7 @@ const getValueFromMap = (input: string, map: string, sourceID) => {
     return sourceID;
 };
 
-const getSeedMapForSeed = (input: string, seedID): SeedMap => {
+const getSeedMapForSeed = (input: string[], seedID): SeedMap => {
     const result = {
         seed: seedID,
         soil: 0,
@@ -59,10 +59,9 @@ const getSeedMapForSeed = (input: string, seedID): SeedMap => {
 }
 
 const part1 = async (): Promise<string | number> => {
-    const input = await readInput("day05.txt");
+    const input = (await readInput("day05.txt")).split("\n");
 
-    const seeds = input
-        .split("\n")[0]
+    const seeds = input[0]
         .split(":")[1]
         .split(" ")
         .filter(it => it.length > 0)
@@ -80,8 +79,26 @@ const part1 = async (): Promise<string | number> => {
 }
 
 const part2 = async (): Promise<string | number> => {
-    const input = await readInput("day0502_test.txt");
-    return "";
+    const input = (await readInput("day05.txt")).split("\n");
+
+    const seedPairs = input[0]
+        .split(":")[1]
+        .split(" ")
+        .filter(it => it.length > 0)
+        .map(it => +it)
+
+    let nearestLocation: number | null = null;
+    for (let i = 0; i < seedPairs.length; i += 2) {
+        for (let j = seedPairs[i]; j < seedPairs[i] + seedPairs[i + 1]; j++) {
+            const location = getSeedMapForSeed(input, j).location;
+            if (nearestLocation == null || location < nearestLocation) {
+                nearestLocation = location
+            }
+        }
+    }
+
+
+    return nearestLocation ?? -1;
 }
 
 console.log(await part1());
