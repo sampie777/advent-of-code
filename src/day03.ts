@@ -18,24 +18,30 @@ const checkIfSymbolAround = (lines: string[], row: number, col: number): boolean
 };
 
 const part1 = async (): Promise<string | number | number[]> => {
-    const input = await readInput("day0301_test2.txt");
+    const input = await readInput("day03.txt");
     const lines = input.split("\n");
 
     let currentNumberString = "";
     let hasSymbolAround = false;
     const foundNumbers: number[] = [];
 
+    function finishNumber() {
+        if (hasSymbolAround) {
+            foundNumbers.push(+currentNumberString);
+        }
+
+        currentNumberString = "";
+        hasSymbolAround = false;
+    }
+
     for (let i = 0; i < lines.length; i++) {
+        finishNumber();
+
         for (let j = 0; j < lines[i].length; j++) {
             const char = lines[i][j];
 
             if (!isNumber(char)) {
-                if (hasSymbolAround) {
-                    foundNumbers.push(+currentNumberString);
-                }
-
-                currentNumberString = "";
-                hasSymbolAround = false;
+                finishNumber();
                 continue;
             }
 
