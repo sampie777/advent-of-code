@@ -1,0 +1,14 @@
+import {readInput} from "./utils.ts";
+
+const part1 = async (): Promise<string | number> => {
+    const input = await readInput("day01.txt");
+    return "";
+}
+
+const part2 = async (): Promise<string | number> => {
+    const input = await readInput("day01.txt");
+    return "";
+}
+
+console.log(await part1());
+console.log(await part2());
