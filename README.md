@@ -1,15 +1,8 @@
 # advent-of-code-2023
 
-Welcome to the Advent of Code[^aoc] Kotlin project created by [sampie777][github] using the [Advent of Code Kotlin Template][template] delivered by JetBrains.
+Welcome to the Advent of Code[^aoc] project created by [sampie777][github].
 
-In this repository, sampie777 is about to provide solutions for the puzzles using [Kotlin][kotlin] language.
-
-If you're stuck with Kotlin-specific questions or anything related to this template, check out the following resources:
-
-- [Kotlin docs][docs]
-- [Kotlin Slack][slack]
-- Template [issue tracker][issues]
-
+In this repository, sampie777 is about to provide solutions for the puzzles using TypeScript language anb Bun.
 
 [^aoc]:
     [Advent of Code][aoc] – An annual event of Christmas-oriented programming challenges started December 2015.
@@ -17,9 +10,6 @@ If you're stuck with Kotlin-specific questions or anything related to this templ
     You can solve the puzzle and provide an answer using the language of your choice.
 
 [aoc]: https://adventofcode.com
-[docs]: https://kotlinlang.org/docs/home.html
 [github]: https://github.com/sampie777
-[issues]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template/issues
-[kotlin]: https://kotlinlang.org
-[slack]: https://surveys.jetbrains.com/s3/kotlin-slack-sign-up
-[template]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template
+
+The [kotlin template]: https://github.com/kotlin-hands-on/advent-of-code-kotlin-template from JetBrains took to long to setup on my local computer (too many dependencies to download). I already had the solution made with the in-browser JS console while waiting for all the gradle files to be downloaded...
