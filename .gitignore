@@ -3,3 +3,4 @@
 build
 src/**/*.txt
 node_modules/
+secrets.ts

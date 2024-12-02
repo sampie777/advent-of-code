@@ -1,9 +1,11 @@
 #!/bin/bash
-echo "Generating day $1 from template..."
 
-echo "$(sed 's/dayxx/day'$1'/g' src/dayxx.ts.template)" > "src/day$1.ts"
-echo -n "" > "src/inputs/day$1.txt"
-echo -n "" > "src/inputs/day$101_test.txt"
-echo -n "" > "src/inputs/day$102_test.txt"
+YEAR=$(date +%Y)
+DAY=$1
+PADDED_DAY=$(printf %02d $DAY)
 
-git add "src/day$1.ts"
+echo "Generating day ${DAY} of $YEAR from template..."
+
+echo "$(sed 's/YEAR/'$YEAR'/g' src/dayxx.ts | sed 's/DAY/'$DAY'/g')" > "src/${YEAR}day${PADDED_DAY}.ts"
+
+git add "src/${YEAR}day${PADDED_DAY}.ts"
