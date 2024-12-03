@@ -11,3 +11,11 @@ In this repository, sampie777 is about to provide solutions for the puzzles usin
 
 [aoc]: https://adventofcode.com
 [github]: https://github.com/sampie777
+
+## Usage
+
+Run `./generate_day.sh <day>` in Linux to create a new day for the current year.
+
+Then open the newly generated file and add the logic to solve the puzzle.
+
+Run `bun run ./src/<year>day<day>.ts` to run the code. The puzzle input will be automatically fetched from the server. 
