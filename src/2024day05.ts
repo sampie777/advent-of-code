@@ -1,8 +1,8 @@
 import { readOnlineInput } from "./utils.ts";
 
 const getProcessedInput = async () => {
-  // const input = await readOnlineInput(2024, 5) as string;
-  const input = "47|53\n" +
+  const input = await readOnlineInput(2024, 5) as string;
+  const input2 = "47|53\n" +
     "97|13\n" +
     "97|61\n" +
     "97|47\n" +
@@ -62,6 +62,39 @@ const part1 = async (): Promise<string | number> => {
 };
 
 const part2 = async (): Promise<string | number> => {
+  const { rules, updates } = await getProcessedInput();
+
+  return updates.filter(update => {
+    const appliedRules = rules.filter(rule =>
+      update.includes(rule[0]) && update.includes(rule[1]));
+
+    return appliedRules.some(rule => update.indexOf(rule[0]) >= update.indexOf(rule[1]));
+  })
+    .map(update => {
+      const appliedRules = rules.filter(rule =>
+        update.includes(rule[0]) && update.includes(rule[1]));
+
+      // Fix update by placing the lower page in front of the higher page
+      for (let i = 0; i < appliedRules.length; i++) {
+        const rule = appliedRules[i];
+        const firstIndex = update.indexOf(rule[0]);
+        const secondIndex = update.indexOf(rule[1]);
+        if (firstIndex < secondIndex) continue;
+
+        const newUpdate = update.filter((_, index) => index != secondIndex);
+        update = [
+          ...newUpdate.slice(0, firstIndex),
+          rule[1],
+          ...newUpdate.slice(firstIndex)
+        ];
+
+        i = -1;
+      }
+
+      return update;
+    })
+    .map(update => update[(update.length - 1) / 2])
+    .reduce((prev, current) => prev + current, 0);
 };
 
 console.log(await part1());
