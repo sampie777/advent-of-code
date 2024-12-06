@@ -19,3 +19,27 @@ export const isInBounds = (matrix: any[][], col: number, row: number) => {
   if (col >= matrix[row].length) return false;
   return true;
 };
+
+export const Stopwatch = () => {
+  let startTime = new Date();
+  let stopTime = new Date();
+
+  const start = () => {
+    startTime = new Date();
+  };
+
+  const stop = (): number => {
+    stopTime = new Date();
+    return read();
+  };
+
+  const read = (): number => {
+    return stopTime.getTime() - startTime.getTime();
+  };
+
+  return {
+    start: start,
+    stop: stop,
+    read: read
+  };
+};

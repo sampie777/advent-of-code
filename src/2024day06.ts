@@ -1,4 +1,4 @@
-import { isInBounds, readOnlineInput } from "./utils.ts";
+import { isInBounds, readOnlineInput, Stopwatch } from "./utils.ts";
 
 type Point = { x: number, y: number };
 type Position = Point & { direction: number };
@@ -75,26 +75,6 @@ const part1 = async (): Promise<string | number> => {
     .reduce((prev, current) => prev + current, 0);
 };
 
-const checkForObstaclePlacementOption = (map: string[][], visitedLocations: boolean[][][], obstaclePlacementOptions: boolean[][], position: Position): boolean => {
-  const nextPositionToTheFront = getNextPositionPoint(map, position);
-  if (!isInBounds(map, nextPositionToTheFront.x, nextPositionToTheFront.y)) return false;
-
-  const nextPositionValueToTheFront = map[nextPositionToTheFront.y][nextPositionToTheFront.x];
-  if (nextPositionValueToTheFront == "#") return false;
-
-  const newDirectionToTheRight = (position.direction + 1) % directions.length;
-  const nextPositionToTheRight = getNextPositionPoint(map, {
-    ...position,
-    direction: newDirectionToTheRight
-  });
-  if (!isInBounds(map, nextPositionToTheRight.x, nextPositionToTheRight.y)) return false;
-
-  if (!visitedLocations[nextPositionToTheRight.y][nextPositionToTheRight.x][newDirectionToTheRight]) return false;
-
-  obstaclePlacementOptions[nextPositionToTheFront.y][nextPositionToTheFront.x] = true;
-  return true;
-};
-
 const debugMaps = (map: string[][], obstaclePlacementOptions?: boolean[][], visitedLocations?: boolean[][][]) => {
   for (let row = 0; row < map.length; row++) {
     let output = "";
@@ -121,7 +101,6 @@ const debugMaps = (map: string[][], obstaclePlacementOptions?: boolean[][], visi
   }
 };
 
-
 const checkIfMapHasAnExit = (map: string[][], obstaclePosition: Point, startPosition: Position): boolean => {
   const position = { ...startPosition };
 
@@ -138,7 +117,7 @@ const checkIfMapHasAnExit = (map: string[][], obstaclePosition: Point, startPosi
     });
   });
 
-  while (isInBounds(map, position.x, position.y)) {
+  while (true) {
     if (visitedLocations[position.y][position.x][position.direction]) return false;
 
     visitedLocations[position.y][position.x][position.direction] = true;
@@ -148,7 +127,10 @@ const checkIfMapHasAnExit = (map: string[][], obstaclePosition: Point, startPosi
     if (!isInBounds(map, nextPosition.x, nextPosition.y)) return true;
 
     const nextPositionValue = map[nextPosition.y][nextPosition.x];
-    if (nextPositionValue == "#" || (nextPosition.x == obstaclePosition.x && nextPosition.y == obstaclePosition.y)) {
+    if (
+      nextPositionValue == "#"
+      || (nextPosition.x == obstaclePosition.x && nextPosition.y == obstaclePosition.y)
+    ) {
       position.direction++;
       if (position.direction > directions.length - 1) position.direction = 0;
       continue;
@@ -157,12 +139,13 @@ const checkIfMapHasAnExit = (map: string[][], obstaclePosition: Point, startPosi
     position.x = nextPosition.x;
     position.y = nextPosition.y;
   }
-
-  return true;
 };
 
 const part2 = async (): Promise<string | number> => {
+  const stopwatch = Stopwatch();
   const { map, position } = await getProcessedInput();
+
+  stopwatch.start();
   const startPosition = { ...position };
 
   const visitedLocations: boolean[][][] = [];
@@ -181,7 +164,7 @@ const part2 = async (): Promise<string | number> => {
     });
   });
 
-  while (isInBounds(map, position.x, position.y)) {
+  while (true) {
     visitedLocations[position.y][position.x][position.direction] = true;
 
     const nextPosition = getNextPositionPoint(map, position);
@@ -194,9 +177,12 @@ const part2 = async (): Promise<string | number> => {
       if (position.direction > directions.length - 1) position.direction = 0;
       visitedLocations[position.y][position.x][position.direction] = true;
       continue;
-    } else if (!obstaclePlacementOptions[nextPosition.y][nextPosition.x]
-      && !(nextPosition.x == startPosition.x && nextPosition.y == startPosition.y)
-      && !checkIfMapHasAnExit(map, nextPosition, startPosition)) {
+    } else if (
+      !obstaclePlacementOptions[nextPosition.y][nextPosition.x] // Check if there wasn't already an obstacle position found
+      && !visitedLocations[nextPosition.y][nextPosition.x].some(it => it) // Check if we haven't visited this location yet
+      && !(nextPosition.x == startPosition.x && nextPosition.y == startPosition.y)  // Make sure it's not the start location
+      && !checkIfMapHasAnExit(map, nextPosition, position)  // For optimization: only check from last known position, as we haven't changed the path
+    ) {
       obstaclePlacementOptions[nextPosition.y][nextPosition.x] = true;
     }
 
@@ -204,21 +190,24 @@ const part2 = async (): Promise<string | number> => {
     position.y = nextPosition.y;
   }
 
-  debugMaps(map, obstaclePlacementOptions, visitedLocations);
+  // debugMaps(map, obstaclePlacementOptions, visitedLocations);
+  //
+  // // Double check our solution
+  // obstaclePlacementOptions.forEach((row, rowIndex) => {
+  //   row.forEach((col, colIndex) => {
+  //     if (!col) return;
+  //     if(checkIfMapHasAnExit(map, {x: colIndex, y: rowIndex}, startPosition)) {
+  //       console.debug("Map has an exit!", colIndex, rowIndex)
+  //     }
+  //   });
+  // });
 
-  // Double check our solution
-  obstaclePlacementOptions.forEach((row, rowIndex) => {
-    row.forEach((col, colIndex) => {
-      if (!col) return;
-      if(checkIfMapHasAnExit(map, {x: colIndex, y: rowIndex}, startPosition)) {
-        console.debug("Map has an exit!", colIndex, rowIndex)
-      }
-    });
-  });
-
-  return obstaclePlacementOptions
+  const result = obstaclePlacementOptions
     .map(row => row.filter(it => it).length)
     .reduce((prev, current) => prev + current, 0);
+
+  console.debug(`Time: ${stopwatch.stop()} ms`);
+  return result;
 };
 
 console.log(await part1());
