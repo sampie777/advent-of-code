@@ -1,14 +1,19 @@
 import { readOnlineInput } from "./utils.ts";
 
-const part1 = async (): Promise<string | number> => {
+const getProcessedInput = async () => {
     // const input = await readOnlineInput(YEAR, DAY) as string;
     const input = "";
+
+    return input;
+}
+
+const part1 = async (): Promise<string | number> => {
+    const input = await getProcessedInput();
     return "";
 }
 
 const part2 = async (): Promise<string | number> => {
-    // const input = await readOnlineInput(YEAR, DAY) as string;
-    const input = "";
+    const input = await getProcessedInput();
     return "";
 }
 
