@@ -22,10 +22,11 @@ export const isInBounds = (matrix: any[][], col: number, row: number) => {
 
 export const Stopwatch = () => {
   let startTime = new Date();
-  let stopTime = new Date();
+  let stopTime: Date | null = null;
 
   const start = () => {
     startTime = new Date();
+    stopTime = null;
   };
 
   const stop = (): number => {
@@ -34,6 +35,7 @@ export const Stopwatch = () => {
   };
 
   const read = (): number => {
+    if (stopTime == null) return (new Date()).getTime() - startTime.getTime();
     return stopTime.getTime() - startTime.getTime();
   };
 
