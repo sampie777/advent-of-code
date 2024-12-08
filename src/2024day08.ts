@@ -37,25 +37,17 @@ const getProcessedInput = async () => {
   return { antennas, map };
 };
 
-const getAntiNodesForAntennas = (antennaA: Point, antennaB: Point): Point[] => {
-  const slope = (antennaB.y - antennaA.y) / (antennaB.x - antennaA.x);
-  const offset = antennaA.y - slope * antennaA.x;
+const isNodeWithinMap = (node: Point, map: string[][]) => node.x >= 0 && node.x < map[0].length && node.y >= 0 && node.y < map.length && node.y < map.length;
 
-  if (antennaA.x != antennaB.x) {
-    const distanceX = antennaB.x - antennaA.x;
-    const x1 = antennaA.x - distanceX;
-    const y1 = slope * x1 + offset;
-    const x2 = antennaB.x + distanceX;
-    const y2 = slope * x2 + offset;
-    return [{ x: Math.round(x1), y: Math.round(y1) }, { x: Math.round(x2), y: Math.round(y2) }];
-  } else {
-    const distanceY = antennaB.y - antennaA.y;
-    const x1 = antennaA.x;
-    const y1 = antennaA.y - distanceY;
-    const x2 = antennaB.x;
-    const y2 = antennaB.y + distanceY;
-    return [{ x: Math.round(x1), y: Math.round(y1) }, { x: Math.round(x2), y: Math.round(y2) }];
-  }
+const getAntiNodesForAntennas1 = (antennaA: Point, antennaB: Point): Point[] => {
+  const antiNodes: Point[] = [];
+  const distanceX = antennaB.x - antennaA.x;
+  const distanceY = antennaB.y - antennaA.y;
+
+  antiNodes.push({ x: Math.round(antennaA.x - distanceX), y: Math.round(antennaA.y - distanceY) });
+  antiNodes.push({ x: Math.round(antennaB.x + distanceX), y: Math.round(antennaB.y + distanceY) });
+
+  return antiNodes;
 };
 
 const part1 = async (): Promise<string | number> => {
@@ -70,8 +62,8 @@ const part1 = async (): Promise<string | number> => {
         const antennaA = antenna[i];
         const antennaB = antenna[j];
 
-        getAntiNodesForAntennas(antennaA, antennaB)
-          .filter(node => node.x >= 0 && node.x < map[0].length && node.y >= 0 && node.y < map.length && node.y < map.length)
+        getAntiNodesForAntennas1(antennaA, antennaB)
+          .filter(node => isNodeWithinMap(node, map))
           .filter(node => !antiNodes.some(it => it.x == node.x && it.y == node.y))
           .forEach(node => antiNodes.push(node));
       }
@@ -81,9 +73,51 @@ const part1 = async (): Promise<string | number> => {
   return antiNodes.length;
 };
 
+
+const getAntiNodesForAntennas2 = (map: string[][], antennaA: Point, antennaB: Point): Point[] => {
+  const antiNodes: Point[] = [];
+  const distanceX = antennaB.x - antennaA.x;
+  const distanceY = antennaB.y - antennaA.y;
+
+  let factor = 0;
+  while (true) {
+    const node = { x: Math.round(antennaA.x - distanceX * factor), y: Math.round(antennaA.y - distanceY * factor) };
+    if (!isNodeWithinMap(node, map)) break;
+    antiNodes.push(node);
+    factor++;
+  }
+
+  factor = 0;
+  while (true) {
+    const node = { x: Math.round(antennaB.x + distanceX * factor), y: Math.round(antennaB.y + distanceY * factor) };
+    if (!isNodeWithinMap(node, map)) break;
+    antiNodes.push(node);
+    factor++;
+  }
+
+  return antiNodes;
+};
+
 const part2 = async (): Promise<string | number> => {
-  const antennas = await getProcessedInput();
-  return "";
+  const { antennas, map } = await getProcessedInput();
+
+  const antiNodes: Point[] = [];
+  antennas.forEach((antenna) => {
+    if (antenna.length <= 1) return;
+
+    for (let i = 0; i < antenna.length; i++) {
+      for (let j = i + 1; j < antenna.length; j++) {
+        const antennaA = antenna[i];
+        const antennaB = antenna[j];
+
+        getAntiNodesForAntennas2(map, antennaA, antennaB)
+          .filter(node => !antiNodes.some(it => it.x == node.x && it.y == node.y))
+          .forEach(node => antiNodes.push(node));
+      }
+    }
+  });
+
+  return antiNodes.length;
 };
 
 console.log(await part1());
