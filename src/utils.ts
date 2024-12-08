@@ -1,5 +1,7 @@
 import { Secrets } from "./secrets.ts";
 
+export type Point = { x: number, y: number };
+
 export const readInput = async (filename: string): Promise<string> => {
   return (await Bun.file(`./src/inputs/${filename}`).text()).trim();
 };
